@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .models import Company, Tag
+from documents.models import RequirementDocument
 
 # Create your views here.
 
@@ -24,3 +25,21 @@ def dashboard(request):
     }
     
     return render(request, 'companies/dashboard.html', context)
+
+def company_detail(request, pk):
+    # Fetch the specific company or return a 404 error if it doesn't exist
+    company = get_object_or_404(Company, pk=pk, is_active=True)
+    
+    # Fetch documents specific to this company
+    specific_docs = RequirementDocument.objects.filter(specific_company=company)
+    
+    # Fetch general requirements (where specific_company is null)
+    general_docs = RequirementDocument.objects.filter(specific_company__isnull=True)
+    
+    context = {
+        'company': company,
+        'specific_docs': specific_docs,
+        'general_docs': general_docs,
+    }
+    
+    return render(request, 'companies/company_detail.html', context)
