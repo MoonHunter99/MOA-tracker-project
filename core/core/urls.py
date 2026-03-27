@@ -22,4 +22,5 @@ urlpatterns = [
     # This makes the companies dashboard the homepage of your site
     path('', include('companies.urls')),
     path('applications/', include('applications.urls')),
+    path('accounts/', include('accounts.urls')),
 ]
