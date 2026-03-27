@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'moas',
     'applications',
     'documents',
+    'accounts',
 ]
 
 MIDDLEWARE = [
