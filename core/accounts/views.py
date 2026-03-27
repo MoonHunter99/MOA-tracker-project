@@ -5,6 +5,10 @@ from django.contrib.auth import login
 # Create your views here.
 
 def register(request):
+    # Check if the user is already logged in; if so, send them to the dashboard
+    if request.user.is_authenticated:
+        return redirect('companies:dashboard')
+
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
