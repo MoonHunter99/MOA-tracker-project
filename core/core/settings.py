@@ -123,3 +123,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Default primary key field type
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# --- Authentication Redirect Settings ---
+LOGIN_REDIRECT_URL = '/'       # Redirects to the dashboard after a successful login
+LOGOUT_REDIRECT_URL = '/'      # Redirects to the dashboard after logging out
+LOGIN_URL = '/accounts/login/' # Where `@login_required` sends unauthenticated users
