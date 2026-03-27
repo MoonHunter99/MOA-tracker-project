@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4">
+        <div class="card shadow border-0">
+            <div class="card-body p-4 text-center">
+                <h3 class="mb-4 fw-bold" style="color: #800000;">Student Login</h3>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="text-start mb-3">
+                        <label class="form-label fw-bold">Username</label>
+                        <input type="text" name="username" class="form-control" placeholder="Enter Username" required>
+                    </div>
+                    
+                    <div class="text-start mb-3">
+                        <label class="form-label fw-bold">Password</label>
+                        <input type="password" name="password" id="id_password" class="form-control" placeholder="Enter Password" required>
+                    </div>
+
+                    <div class="text-start mb-4 form-check">
+                        <input type="checkbox" class="form-check-input" id="showPassword">
+                        <label class="form-check-label small text-muted" for="showPassword">Show Password</label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-pup w-100 py-2 fw-bold">Sign In</button>
+                </form>
+
+                <hr class="my-4">
+                <p class="text-muted small mb-0">Don't have an account yet?</p>
+                <a href="{% url 'register' %}" class="btn btn-outline-secondary btn-sm w-100 mt-2">Create New Account</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Logic to toggle password visibility
+    document.getElementById('showPassword').onclick = function() {
+        var passwordField = document.getElementById('id_password');
+        if (this.checked) {
+            passwordField.type = "text";
+        } else {
+            passwordField.type = "password";
+        }
+    };
+</script>
+{% endblock %}

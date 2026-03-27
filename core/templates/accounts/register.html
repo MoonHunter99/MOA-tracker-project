@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow border-0 mt-3">
+            <div class="card-body p-4">
+                <h3 class="text-center mb-4 fw-bold" style="color: #800000;">Student Registration</h3>
+                
+                <form method="post" id="registrationForm">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <div class="form-text small text-muted">{{ field.help_text }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" id="showRegPassword">
+                        <label class="form-check-label small text-muted" for="showRegPassword">Show Passwords</label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-pup w-100 py-2 mt-3 fw-bold">Register Account</button>
+                </form>
+                
+                <div class="text-center mt-4 border-top pt-3">
+                    <a href="{% url 'login' %}" class="fw-bold" style="color: #800000; text-decoration: none;">Return to Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('showRegPassword').onclick = function() {
+        // Django's UserCreationForm usually uses id_password1 and id_password2
+        var pass1 = document.getElementById('id_password1');
+        var pass2 = document.getElementById('id_password2');
+        
+        if (this.checked) {
+            if(pass1) pass1.type = "text";
+            if(pass2) pass2.type = "text";
+        } else {
+            if(pass1) pass1.type = "password";
+            if(pass2) pass2.type = "password";
+        }
+    };
+</script>
+
+<style>
+    input { display: block; width: 100%; padding: 0.375rem 0.75rem; border: 1px solid #ced4da; border-radius: 0.375rem; }
+</style>
+{% endblock %}

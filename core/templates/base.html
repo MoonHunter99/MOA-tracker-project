@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PUP MOA Tracker</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+    
+    <style>
+        :root { --pup-maroon: #800000; --pup-gold: #FFD700; }
+        body { background-color: #f8f9fa; }
+        .navbar-pup { background-color: var(--pup-maroon); border-bottom: 4px solid var(--pup-gold); color: white; }
+        .btn-pup { background-color: var(--pup-maroon); color: white; border: none; }
+        .btn-pup:hover { background-color: #500000; color: var(--pup-gold); }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark navbar-pup mb-5 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">PUP MOA PORTAL</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
