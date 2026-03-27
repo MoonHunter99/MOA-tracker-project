@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # This makes the companies dashboard the homepage of your site
     path('', include('companies.urls')),
+    path('applications/', include('applications.urls')),
 ]
