@@ -11,17 +11,28 @@ def dashboard(request):
     # Check if the user clicked a specific tag filter
     selected_tag = request.GET.get('tag')
     
+    # Check if the user entered a search query
+    search_query = request.GET.get('q', '')
+    
+    # Start with all active companies
+    companies = Company.objects.filter(is_active=True)
+    
     if selected_tag:
-        # Filter companies by the selected tag and ensure they are active
-        companies = Company.objects.filter(tags__name=selected_tag, is_active=True).distinct()
-    else:
-        # If no filter is applied, show all active companies
-        companies = Company.objects.filter(is_active=True)
+        # Filter companies by the selected tag
+        companies = companies.filter(tags__name=selected_tag)
+        
+    if search_query:
+        # Filter companies where the name contains the search query (case-insensitive)
+        companies = companies.filter(name__icontains=search_query)
+        
+    # Ensure distinct results just in case 'tags__name' creates duplicates
+    companies = companies.distinct()
         
     context = {
         'companies': companies,
         'tags': tags,
         'selected_tag': selected_tag,
+        'search_query': search_query,
     }
     
     return render(request, 'companies/dashboard.html', context)

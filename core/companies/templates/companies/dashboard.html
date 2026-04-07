@@ -31,9 +31,24 @@
             </a>
         </div>
 
-        <div class="mb-6">
-            <h1 class="text-3xl font-extrabold text-gray-900">Partner Companies</h1>
-            <p class="text-gray-500 mt-1">Browse available internship opportunities and active MOAs.</p>
+        <div class="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-extrabold text-gray-900">Partner Companies</h1>
+                <p class="text-gray-500 mt-1">Browse available internship opportunities and active MOAs.</p>
+            </div>
+            
+            <!-- Company Search Form -->
+            <form method="GET" action="{% url 'companies:dashboard' %}" class="flex w-full md:w-auto shadow-sm">
+                {% if selected_tag %}
+                    <!-- Preserve the selected tag filter so search scopes to the chosen category -->
+                    <input type="hidden" name="tag" value="{{ selected_tag }}">
+                {% endif %}
+                <input type="text" name="q" placeholder="Search companies..." value="{{ search_query|default:'' }}" 
+                       class="w-full md:w-64 rounded-l-md border-gray-300 focus:border-red-500 focus:ring-red-500 sm:text-sm">
+                <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded-r-md hover:bg-gray-700 transition-colors font-medium">
+                    Search
+                </button>
+            </form>
         </div>
 
         {% if companies %}
