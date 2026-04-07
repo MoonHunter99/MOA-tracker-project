@@ -127,6 +127,12 @@ STATIC_URL = 'static/'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# --- Media Files Configuration ---
+# MEDIA_URL is the base public URL that the browser will use to access uploaded files
+MEDIA_URL = 'media/'
+# MEDIA_ROOT is the absolute filesystem path where uploaded files will be stored locally
+MEDIA_ROOT = BASE_DIR / 'media'
+
 # --- Authentication Redirect Settings ---
 LOGIN_REDIRECT_URL = '/'       # Redirects to the dashboard after a successful login
 LOGOUT_REDIRECT_URL = '/'      # Redirects to the dashboard after logging out
