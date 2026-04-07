@@ -1,0 +1,49 @@
+{% extends "university_admin/admin_base.html" %}
+
+{% block admin_content %}
+<div class="mb-6 flex justify-between items-center">
+    <h1 class="text-3xl font-bold text-gray-900">Internship Applications</h1>
+</div>
+
+<div class="bg-white shadow overflow-hidden sm:rounded-md border border-gray-200">
+    <ul role="list" class="divide-y divide-gray-200">
+        {% for app in applications %}
+        <li>
+            <a href="{% url 'university_admin:manage_app' app.pk %}" class="block hover:bg-gray-50 transition-colors">
+                <div class="px-4 py-4 sm:px-6">
+                    <div class="flex items-center justify-between">
+                        <p class="text-lg font-medium text-blue-800 truncate">{{ app.company.name }}</p>
+                        <div class="ml-2 flex-shrink-0 flex">
+                            <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                {% if app.status == 'accepted' %}bg-green-100 text-green-800
+                                {% elif app.status == 'rejected' %}bg-red-100 text-red-800
+                                {% elif app.status == 'interviewing' %}bg-yellow-100 text-yellow-800
+                                {% elif app.status == 'submitted' %}bg-blue-100 text-blue-800
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ app.get_status_display }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-2 sm:flex sm:justify-between">
+                        <div class="sm:flex text-sm text-gray-500">
+                            <p class="flex items-center">
+                                Student: {{ app.student.first_name }} {{ app.student.last_name }} ({{ app.student.username }})
+                            </p>
+                        </div>
+                        <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
+                            <p>
+                                Applied on <time>{{ app.application_date|date:"M d, Y" }}</time>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </li>
+        {% empty %}
+        <li class="px-4 py-8 text-center text-gray-500">
+            No applications found.
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

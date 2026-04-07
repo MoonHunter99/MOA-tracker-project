@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'applications',
     'documents',
     'accounts',
+    'university_admin',
 ]
 
 MIDDLEWARE = [
@@ -127,6 +128,11 @@ STATIC_URL = 'static/'
 # --- Media Files (Uploads/Downloads) Configuration ---
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Email Configuration (Phase 3)
+# For local development, this prints emails to the terminal console instead of trying to use SMTP.
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'admin@pup-moa-tracker.edu.ph'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

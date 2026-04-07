@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
+from .forms import StudentRegistrationForm
 
 # Create your views here.
 
@@ -10,13 +10,13 @@ def register(request):
         return redirect('companies:dashboard')
 
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = StudentRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
             # Automatically log the user in after they register
             login(request, user)
             return redirect('companies:dashboard')
     else:
-        form = UserCreationForm()
+        form = StudentRegistrationForm()
         
     return render(request, 'registration/register.html', {'form': form})

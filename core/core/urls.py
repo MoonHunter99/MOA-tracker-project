@@ -21,8 +21,13 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    # Admin Interface
     path('admin/', admin.site.urls),
-    # This makes the companies dashboard the homepage of your site
+    
+    # Custom University Admin Portal (Protected)
+    path('dashboard/admin/', include('university_admin.urls', namespace='university_admin')),
+
+    # Apps
     path('', include('companies.urls')),
     path('applications/', include('applications.urls')),
     path('accounts/', include('accounts.urls')),

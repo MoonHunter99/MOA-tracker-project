@@ -7,6 +7,15 @@ __pycache__/
 
 # Django database
 db.sqlite3
+project_context.md
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django database
+db.sqlite3
 db.sqlite3-journal
 
 # Media files (user uploads)
@@ -16,3 +25,6 @@ core/media/
 # Environments
 venv/
 .env
+
+# AI Reference files
+.ai_reference.md

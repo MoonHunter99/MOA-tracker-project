@@ -1,0 +1,62 @@
+{% extends "university_admin/admin_base.html" %}
+
+{% block admin_content %}
+<div class="mb-6 border-b border-gray-200 pb-4 flex items-center gap-4">
+    <a href="{% url 'university_admin:moa_list' %}" class="text-gray-400 hover:text-gray-600">
+        &larr; Back
+    </a>
+    <h1 class="text-2xl font-bold text-gray-900">Manage Request: {{ moa_request.target_company_name }}</h1>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-2 space-y-6">
+        <!-- Student Info -->
+        <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Student Information</h2>
+            <div class="grid grid-cols-2 gap-4 text-sm">
+                <div><span class="text-gray-500">Name:</span> <p class="font-medium">{{ moa_request.student.first_name }} {{ moa_request.student.last_name }}</p></div>
+                <div><span class="text-gray-500">Student No:</span> <p class="font-medium">{{ moa_request.student.profile.student_number|default:"N/A" }}</p></div>
+                <div><span class="text-gray-500">Course:</span> <p class="font-medium">{{ moa_request.student.profile.get_course_display|default:"N/A" }}</p></div>
+                <div><span class="text-gray-500">Email:</span> <p class="font-medium">{{ moa_request.student.email }}</p></div>
+            </div>
+        </div>
+
+        <!-- Request Details -->
+        <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Request Details</h2>
+            <div class="space-y-4 text-sm">
+                <div><span class="text-gray-500 block mb-1">Target Company:</span> <p class="font-medium text-lg">{{ moa_request.target_company_name }}</p></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><span class="text-gray-500">Contact Person:</span> <p class="font-medium">{{ moa_request.company_contact_person }}</p></div>
+                    <div><span class="text-gray-500">Contact Email:</span> <p class="font-medium">{{ moa_request.company_contact_email }}</p></div>
+                </div>
+                <div class="pt-2"><span class="text-gray-500 block mb-1">Justification:</span> <div class="bg-gray-50 p-4 rounded text-gray-700">{{ moa_request.justification }}</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Control -->
+    <div class="lg:col-span-1">
+        <div class="bg-white shadow rounded-lg p-6 border border-gray-200 sticky top-8">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Status Control</h2>
+            <p class="text-sm text-gray-600 mb-4">Updating the status will automatically send an email to <strong>{{ moa_request.student.email }}</strong>.</p>
+            
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label for="status" class="block text-sm font-medium text-gray-700">Current Status</label>
+                    <select id="status" name="status" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md font-semibold">
+                        {% for value, label in status_choices %}
+                            <option value="{{ value }}" {% if moa_request.status == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-800 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                    Update Status & Notify Student
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

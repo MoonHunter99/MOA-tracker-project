@@ -1,0 +1,75 @@
+{% extends "university_admin/admin_base.html" %}
+
+{% block admin_content %}
+<div class="mb-6 border-b border-gray-200 pb-4 flex items-center gap-4">
+    <a href="{% url 'university_admin:app_list' %}" class="text-gray-400 hover:text-gray-600">
+        &larr; Back
+    </a>
+    <h1 class="text-2xl font-bold text-gray-900">Manage Application: {{ app.company.name }}</h1>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-2 space-y-6">
+        <!-- Student Info -->
+        <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Applicant Information</h2>
+            <div class="grid grid-cols-2 gap-4 text-sm">
+                <div><span class="text-gray-500">Name:</span> <p class="font-medium">{{ application.student.first_name }} {{ application.student.last_name }}</p></div>
+                <div><span class="text-gray-500">Student No:</span> <p class="font-medium">{{ application.student.profile.student_number|default:"N/A" }}</p></div>
+                <div><span class="text-gray-500">Course:</span> <p class="font-medium">{{ application.student.profile.get_course_display|default:"N/A" }}</p></div>
+                <div><span class="text-gray-500">Email:</span> <p class="font-medium">{{ application.student.email }}</p></div>
+            </div>
+        </div>
+
+        <!-- Application Details -->
+        <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Application Materials</h2>
+            <div class="space-y-4 text-sm">
+                <div><span class="text-gray-500 block mb-1">Target Partner Company:</span> 
+                    <a href="#" class="font-medium text-lg text-blue-700 hover:underline">{{ application.company.name }}</a>
+                </div>
+                
+                <div class="pt-4 border-t">
+                    <span class="text-gray-500 block mb-2 font-semibold">Resume:</span>
+                    {% if application.student_resume %}
+                        <a href="{{ application.student_resume.url }}" target="_blank" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            Download Resume.pdf
+                        </a>
+                    {% else %}
+                        <p class="text-gray-500 italic">No resume uploaded.</p>
+                    {% endif %}
+                </div>
+                
+                <div class="pt-4 border-t">
+                    <span class="text-gray-500 block mb-2 font-semibold">Cover Letter:</span> 
+                    <div class="bg-gray-50 p-4 rounded text-gray-700 whitespace-pre-wrap">{{ application.cover_letter|default:"No cover letter provided." }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Control -->
+    <div class="lg:col-span-1">
+        <div class="bg-white shadow rounded-lg p-6 border border-gray-200 sticky top-8">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Status Control</h2>
+            <p class="text-sm text-gray-600 mb-4">Updating the status will automatically send an email to <strong>{{ application.student.email }}</strong>.</p>
+            
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label for="status" class="block text-sm font-medium text-gray-700">Current Status</label>
+                    <select id="status" name="status" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md font-semibold">
+                        {% for value, label in status_choices %}
+                            <option value="{{ value }}" {% if application.status == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-800 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                    Update Status & Notify Student
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
