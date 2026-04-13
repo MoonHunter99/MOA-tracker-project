@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "60229191b3bcdf156811f5762e5ce7f0c9be36a4788cebf582bb7499d619b041"
+            "sha256": "6f36ebb4899c05627ab7b049f5af57d49aa6c3805ce2b3b3da025685cefedef2"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -161,12 +161,29 @@
         },
         "django": {
             "hashes": [
-                "sha256:2e5974441491ddb34c3f13d5e7a9f97b07ba03bf70234c0a9c68b79bbb235bc3",
-                "sha256:90be765ee756af8a6cbd6693e56452404b5ad15294f4d5e40c0a55a0f4870fe1"
+                "sha256:14359c809fc16e8f81fd2b59d7d348e4d2d799da6840b10522b6edf7b8afc1da",
+                "sha256:8cfa2572b3f2768b2e84983cf3c4811877a01edb64e817986ec5d60751c113ac"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.12'",
-            "version": "==6.0.3"
+            "version": "==6.0.4"
+        },
+        "django-picklefield": {
+            "hashes": [
+                "sha256:3a1f740536c0e60d0dba43aa89ccdbe86760d4c3f8ec47799eae122baa741d0a",
+                "sha256:929bcfbae5b48bd22a52bc04521fdfdd152eee36abb9f20228f9480f9df65f45"
+            ],
+            "markers": "python_version >= '3.10'",
+            "version": "==3.4.0"
+        },
+        "django-q2": {
+            "hashes": [
+                "sha256:4eded27644b0ffb291839c9f9c12fea6c0dec63ebd891fa6881b0b446098a49d",
+                "sha256:ef7facca96fae9c11ddf2c5252d3817975c7a9a6d989fa0d65487d8823d57799"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.9' and python_version < '4'",
+            "version": "==1.9.0"
         },
         "pillow": {
             "hashes": [
@@ -284,11 +301,11 @@
         },
         "tzdata": {
             "hashes": [
-                "sha256:06a47e5700f3081aab02b2e513160914ff0694bce9947d6b76ebd6bf57cfc5d1",
-                "sha256:de39c2ca5dc7b0344f2eba86f49d614019d29f060fc4ebc8a417896a620b56a7"
+                "sha256:4b1d2be7ac37ceafd7327b961aa3a54e467efbdb563a23655fbfe0d39cfc42a9",
+                "sha256:67658a1903c75917309e753fdc349ac0efd8c27db7a0cb406a25be4840f87f98"
             ],
             "markers": "python_version >= '2'",
-            "version": "==2025.3"
+            "version": "==2026.1"
         }
     },
     "develop": {}

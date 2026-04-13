@@ -1,10 +1,12 @@
 import csv
+import json
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import user_passes_test
-from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib import messages
+from django.db.models import Count
+from django_q.tasks import async_task
 from moas.models import MOARequest
 from applications.models import InternshipApplication, ApplicationMessage
 from .utils import generate_endorsement_pdf
@@ -17,9 +19,40 @@ def dashboard(request):
     pending_moas = MOARequest.objects.filter(status='pending').count()
     active_applications = InternshipApplication.objects.exclude(status__in=['draft', 'rejected']).count()
     
+    # --- Analytics Data ---
+    # MOA status distribution for Pie Chart
+    moa_status_data = list(
+        MOARequest.objects.values('status').annotate(count=Count('id')).order_by('status')
+    )
+    moa_labels = [dict(MOARequest.STATUS_CHOICES).get(item['status'], item['status']) for item in moa_status_data]
+    moa_counts = [item['count'] for item in moa_status_data]
+    
+    # Top 5 companies by application count for Bar Chart
+    top_companies_data = list(
+        InternshipApplication.objects.values('company__name')
+        .annotate(count=Count('id'))
+        .order_by('-count')[:5]
+    )
+    company_labels = [item['company__name'] for item in top_companies_data]
+    company_counts = [item['count'] for item in top_companies_data]
+
+    # Application status distribution for Doughnut Chart
+    app_status_data = list(
+        InternshipApplication.objects.values('status').annotate(count=Count('id')).order_by('status')
+    )
+    app_labels = [dict(InternshipApplication.STATUS_CHOICES).get(item['status'], item['status']) for item in app_status_data]
+    app_counts = [item['count'] for item in app_status_data]
+    
     context = {
         'pending_moas': pending_moas,
         'active_applications': active_applications,
+        # JSON-safe data for Chart.js
+        'moa_labels': json.dumps(moa_labels),
+        'moa_counts': json.dumps(moa_counts),
+        'company_labels': json.dumps(company_labels),
+        'company_counts': json.dumps(company_counts),
+        'app_labels': json.dumps(app_labels),
+        'app_counts': json.dumps(app_counts),
     }
     return render(request, 'university_admin/dashboard.html', context)
 
@@ -80,17 +113,10 @@ def manage_application(request, pk):
             application.status = new_status
             application.save()
             
-            # Phase 3: Trigger Email Notification
-            subject = f"Update: Your Internship Application for {application.company.name}"
-            message = f"Hello {application.student.username},\n\nYour application status for {application.company.name} has been updated to: {application.get_status_display()}.\n\nThank you,\nPUP Admin Team"
-            send_mail(
-                subject,
-                message,
-                settings.DEFAULT_FROM_EMAIL,
-                [application.student.email],
-                fail_silently=True,
-            )
-            messages.success(request, f"Application status updated to {application.get_status_display()} and email sent via console.")
+            # Dispatch email asynchronously via django-q2 background worker
+            async_task('applications.tasks.send_status_email', application.pk)
+            
+            messages.success(request, f"Application status updated to {application.get_status_display()}. Email notification queued.")
             return redirect('university_admin:app_list')
             
     thread_messages = application.messages.all().order_by('created_at')

@@ -33,4 +33,129 @@
         </div>
     </div>
 </div>
+
+<!-- Analytics Charts Section -->
+<div class="mt-10 mb-4 border-b border-gray-200 pb-3">
+    <h2 class="text-2xl font-bold text-gray-900">Analytics</h2>
+    <p class="text-sm text-gray-500 mt-1">Visual breakdown of system activity.</p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- MOA Status Pie Chart -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 class="text-md font-semibold text-gray-700 mb-4 text-center">MOA Request Status</h3>
+        <div class="relative" style="max-height: 280px;">
+            <canvas id="moaStatusChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Application Status Doughnut Chart -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 class="text-md font-semibold text-gray-700 mb-4 text-center">Application Status</h3>
+        <div class="relative" style="max-height: 280px;">
+            <canvas id="appStatusChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Top Companies Bar Chart -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 class="text-md font-semibold text-gray-700 mb-4 text-center">Top Companies by Applications</h3>
+        <div class="relative" style="max-height: 280px;">
+            <canvas id="topCompaniesChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Color palettes
+    const moaColors = ['#facc15', '#3b82f6', '#22c55e', '#ef4444'];
+    const appColors = ['#9ca3af', '#3b82f6', '#f59e0b', '#22c55e', '#ef4444'];
+    const barColors = ['#991b1b', '#b91c1c', '#dc2626', '#ef4444', '#f87171'];
+
+    // --- MOA Status Pie Chart ---
+    const moaLabels = {{ moa_labels|safe }};
+    const moaCounts = {{ moa_counts|safe }};
+
+    if (moaLabels.length > 0) {
+        new Chart(document.getElementById('moaStatusChart'), {
+            type: 'pie',
+            data: {
+                labels: moaLabels,
+                datasets: [{
+                    data: moaCounts,
+                    backgroundColor: moaColors.slice(0, moaLabels.length),
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { padding: 15, font: { size: 11 } } }
+                }
+            }
+        });
+    }
+
+    // --- Application Status Doughnut Chart ---
+    const appLabels = {{ app_labels|safe }};
+    const appCounts = {{ app_counts|safe }};
+
+    if (appLabels.length > 0) {
+        new Chart(document.getElementById('appStatusChart'), {
+            type: 'doughnut',
+            data: {
+                labels: appLabels,
+                datasets: [{
+                    data: appCounts,
+                    backgroundColor: appColors.slice(0, appLabels.length),
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { padding: 15, font: { size: 11 } } }
+                }
+            }
+        });
+    }
+
+    // --- Top Companies Bar Chart ---
+    const companyLabels = {{ company_labels|safe }};
+    const companyCounts = {{ company_counts|safe }};
+
+    if (companyLabels.length > 0) {
+        new Chart(document.getElementById('topCompaniesChart'), {
+            type: 'bar',
+            data: {
+                labels: companyLabels,
+                datasets: [{
+                    label: 'Applications',
+                    data: companyCounts,
+                    backgroundColor: barColors.slice(0, companyLabels.length),
+                    borderRadius: 6,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                scales: {
+                    y: { beginAtZero: true, ticks: { precision: 0 } },
+                    x: { ticks: { font: { size: 10 } } }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+</script>
 {% endblock %}

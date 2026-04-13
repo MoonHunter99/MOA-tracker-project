@@ -46,6 +46,9 @@ INSTALLED_APPS = [
     'documents',
     'accounts',
     'university_admin',
+
+    # Third-party apps
+    'django_q',
 ]
 
 MIDDLEWARE = [
@@ -147,3 +150,15 @@ MEDIA_ROOT = BASE_DIR / 'media'
 LOGIN_REDIRECT_URL = '/'       # Redirects to the dashboard after a successful login
 LOGOUT_REDIRECT_URL = '/'      # Redirects to the dashboard after logging out
 LOGIN_URL = '/accounts/login/' # Where `@login_required` sends unauthenticated users
+
+# --- Django-Q2 Async Task Queue ---
+# Uses the ORM (SQLite) as a broker so there's no need for Redis/RabbitMQ on Windows.
+Q_CLUSTER = {
+    'name': 'MOATrackerCluster',
+    'workers': 2,
+    'timeout': 60,
+    'retry': 120,
+    'queue_limit': 50,
+    'bulk': 10,
+    'orm': 'default',
+}
