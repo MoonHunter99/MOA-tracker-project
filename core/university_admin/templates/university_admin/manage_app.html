@@ -69,6 +69,11 @@
                     Update Status & Notify Student
                 </button>
             </form>
+            
+            <hr class="my-4 border-gray-200">
+            <a href="{% url 'university_admin:download_endorsement' application.id %}" target="_blank" class="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-blue-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                Generate Endorsement PDF
+            </a>
         </div>
     </div>
 </div>

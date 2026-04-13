@@ -1,3 +1,5 @@
+import csv
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import user_passes_test
 from django.core.mail import send_mail
@@ -5,6 +7,7 @@ from django.conf import settings
 from django.contrib import messages
 from moas.models import MOARequest
 from applications.models import InternshipApplication
+from .utils import generate_endorsement_pdf
 
 def is_admin(user):
     return user.is_active and (user.is_staff or user.is_superuser)
@@ -79,3 +82,56 @@ def manage_application(request, pk):
             return redirect('university_admin:app_list')
             
     return render(request, 'university_admin/manage_app.html', {'application': application, 'status_choices': InternshipApplication.STATUS_CHOICES})
+
+@user_passes_test(is_admin)
+def download_endorsement_letter(request, pk):
+    application = get_object_or_404(InternshipApplication, pk=pk)
+    
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="Endorsement_{application.student.username}_{application.company.name}.pdf"'
+    
+    generate_endorsement_pdf(application, response)
+    
+    return response
+
+@user_passes_test(is_admin)
+def export_moas_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="moas_export.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['ID', 'Student', 'Target Company', 'Contact Person', 'Email', 'Status', 'Date Requested'])
+    
+    moas = MOARequest.objects.all().order_by('-date_requested')
+    for moa in moas:
+        writer.writerow([
+            moa.id,
+            moa.student.username,
+            moa.target_company_name,
+            moa.company_contact_person,
+            moa.company_contact_email,
+            moa.get_status_display(),
+            moa.date_requested.strftime("%Y-%m-%d %H:%M:%S")
+        ])
+        
+    return response
+
+@user_passes_test(is_admin)
+def export_applications_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="applications_export.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['ID', 'Student', 'Company', 'Status', 'Date Applied'])
+    
+    apps = InternshipApplication.objects.all().order_by('-application_date')
+    for app in apps:
+        writer.writerow([
+            app.id,
+            app.student.username,
+            app.company.name,
+            app.get_status_display(),
+            app.application_date.strftime("%Y-%m-%d %H:%M:%S")
+        ])
+        
+    return response
