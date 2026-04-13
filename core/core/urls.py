@@ -26,6 +26,9 @@ urlpatterns = [
     
     # Custom University Admin Portal (Protected)
     path('dashboard/admin/', include('university_admin.urls', namespace='university_admin')),
+    
+    # Partner Portal
+    path('partner-portal/', include('companies.portal_urls', namespace='portal')),
 
     # Apps
     path('', include('companies.urls')),

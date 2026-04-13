@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import InternshipApplication
+from .models import InternshipApplication, ApplicationMessage
 from .forms import ApplicationForm
 from companies.models import Company
 # Create your views here.
@@ -40,3 +40,26 @@ def my_applications(request):
         'applications': applications,
     }
     return render(request, 'applications/my_applications.html', context)
+
+@login_required
+def application_detail(request, pk):
+    application = get_object_or_404(InternshipApplication, pk=pk, student=request.user)
+    
+    if request.method == 'POST':
+        new_message = request.POST.get('message_content')
+        if new_message:
+            ApplicationMessage.objects.create(
+                application=application,
+                sender=request.user,
+                content=new_message,
+                is_from_admin=False
+            )
+            return redirect('applications:application_detail', pk=pk)
+            
+    thread_messages = application.messages.all().order_by('created_at')
+    
+    context = {
+        'application': application,
+        'thread_messages': thread_messages
+    }
+    return render(request, 'applications/application_detail.html', context)

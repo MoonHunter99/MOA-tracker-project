@@ -21,3 +21,15 @@ class InternshipApplication(models.Model):
     
     def __str__(self):
         return f"{self.student.username} -> {self.company.name} ({self.get_status_display()})"
+
+class ApplicationMessage(models.Model):
+    application = models.ForeignKey(InternshipApplication, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    # helper to easily style the UI (left/right alignment)
+    is_from_admin = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return f"Msg by {self.sender.username} on {self.created_at.strftime('%Y-%m-%d %H:%M')}"

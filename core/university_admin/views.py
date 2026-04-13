@@ -6,7 +6,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib import messages
 from moas.models import MOARequest
-from applications.models import InternshipApplication
+from applications.models import InternshipApplication, ApplicationMessage
 from .utils import generate_endorsement_pdf
 
 def is_admin(user):
@@ -64,7 +64,19 @@ def manage_application(request, pk):
     
     if request.method == 'POST':
         new_status = request.POST.get('status')
-        if new_status and new_status != application.status:
+        new_message = request.POST.get('message_content')
+        
+        if new_message:
+            ApplicationMessage.objects.create(
+                application=application,
+                sender=request.user,
+                content=new_message,
+                is_from_admin=True
+            )
+            messages.success(request, 'Message added to the thread.')
+            return redirect('university_admin:manage_app', pk=pk)
+            
+        elif new_status and new_status != application.status:
             application.status = new_status
             application.save()
             
@@ -81,7 +93,13 @@ def manage_application(request, pk):
             messages.success(request, f"Application status updated to {application.get_status_display()} and email sent via console.")
             return redirect('university_admin:app_list')
             
-    return render(request, 'university_admin/manage_app.html', {'application': application, 'status_choices': InternshipApplication.STATUS_CHOICES})
+    thread_messages = application.messages.all().order_by('created_at')
+            
+    return render(request, 'university_admin/manage_app.html', {
+        'application': application, 
+        'status_choices': InternshipApplication.STATUS_CHOICES,
+        'thread_messages': thread_messages
+    })
 
 @user_passes_test(is_admin)
 def download_endorsement_letter(request, pk):
