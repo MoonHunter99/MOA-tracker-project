@@ -17,6 +17,7 @@
             <div class="mb-4">
                 <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full 
                     {% if application.status == 'accepted' %}bg-green-100 text-green-800
+                    {% elif application.status == 'completed' %}bg-purple-100 text-purple-800
                     {% elif application.status == 'rejected' %}bg-red-100 text-red-800
                     {% elif application.status == 'interviewing' %}bg-yellow-100 text-yellow-800
                     {% elif application.status == 'submitted' %}bg-blue-100 text-blue-800
@@ -34,7 +35,7 @@
         </div>
     </div>
     
-    <div class="lg:col-span-2">
+    <div class="lg:col-span-2 space-y-6">
         <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
             <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Messages & Thread</h2>
             <p class="text-sm text-gray-500 mb-6">Communicate with University Admins regarding your application status or requirements.</p>
@@ -63,6 +64,58 @@
                 </button>
             </form>
         </div>
+
+        <!-- Evaluation Results (only shown when approved by admin) -->
+        {% if evaluation %}
+        <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+            <div class="flex items-center justify-between mb-4 border-b pb-2">
+                <h2 class="text-lg font-bold text-gray-800">Your Internship Evaluation</h2>
+                <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Reviewed & Approved</span>
+            </div>
+
+            <p class="text-sm text-gray-500 mb-6">Your company supervisor has submitted this performance evaluation. It has been reviewed and approved by your OJT Adviser.</p>
+
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+                <div class="text-center p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <p class="text-xs text-gray-500 font-semibold uppercase">Technical</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ evaluation.technical_skills }}/5</p>
+                </div>
+                <div class="text-center p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <p class="text-xs text-gray-500 font-semibold uppercase">Communication</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ evaluation.communication }}/5</p>
+                </div>
+                <div class="text-center p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <p class="text-xs text-gray-500 font-semibold uppercase">Professional</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ evaluation.professionalism }}/5</p>
+                </div>
+                <div class="text-center p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <p class="text-xs text-gray-500 font-semibold uppercase">Teamwork</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ evaluation.teamwork }}/5</p>
+                </div>
+                <div class="text-center p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <p class="text-xs text-gray-500 font-semibold uppercase">Initiative</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ evaluation.initiative }}/5</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 mb-6">
+                <div class="text-center px-4 py-2 bg-red-50 rounded-lg border border-red-200">
+                    <p class="text-xs text-red-600 font-semibold uppercase">Average Score</p>
+                    <p class="text-xl font-bold text-red-800">{{ evaluation.average_score }}/5</p>
+                </div>
+                <div class="text-center px-4 py-2 bg-blue-50 rounded-lg border border-blue-200">
+                    <p class="text-xs text-blue-600 font-semibold uppercase">Recommendation</p>
+                    <p class="text-sm font-bold text-blue-800">{{ evaluation.get_recommendation_display }}</p>
+                </div>
+            </div>
+
+            <div>
+                <p class="text-sm text-gray-500 font-semibold uppercase tracking-wider mb-2">Supervisor's Comments</p>
+                <div class="p-4 bg-gray-50 rounded-md text-gray-800 whitespace-pre-wrap text-sm border border-gray-200">{{ evaluation.overall_comments }}</div>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
+

@@ -1,0 +1,156 @@
+{% extends "university_admin/admin_base.html" %}
+
+{% block admin_content %}
+<div class="mb-6 border-b border-gray-200 pb-4 flex items-center gap-4">
+    <a href="{% url 'university_admin:evaluations_list' %}" class="text-gray-400 hover:text-gray-600">
+        &larr; Back
+    </a>
+    <h1 class="text-2xl font-bold text-gray-900">Evaluation Detail</h1>
+</div>
+
+{% if messages %}
+<div class="mb-6 space-y-2">
+    {% for message in messages %}
+        <div class="p-4 rounded-md {% if message.tags == 'success' %}bg-green-50 text-green-800 border border-green-200{% elif message.tags == 'info' %}bg-blue-50 text-blue-800 border border-blue-200{% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %} shadow-sm">
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-2 space-y-6">
+        <!-- Student & Company Info -->
+        <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Evaluation Summary</h2>
+            <div class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                    <span class="text-gray-500">Student:</span>
+                    <p class="font-medium">{{ evaluation.application.student.get_full_name|default:evaluation.application.student.username }}</p>
+                </div>
+                <div>
+                    <span class="text-gray-500">Company:</span>
+                    <p class="font-medium">{{ evaluation.application.company.name }}</p>
+                </div>
+                <div>
+                    <span class="text-gray-500">Evaluator:</span>
+                    <p class="font-medium">{{ evaluation.evaluator.get_full_name|default:evaluation.evaluator.username }}</p>
+                </div>
+                <div>
+                    <span class="text-gray-500">Submitted:</span>
+                    <p class="font-medium">{{ evaluation.created_at|date:"F d, Y g:i a" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Scores -->
+        <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Performance Ratings</h2>
+
+            <div class="space-y-4">
+                <!-- Technical Skills -->
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span class="text-sm font-medium text-gray-700">Technical Skills</span>
+                    <div class="flex items-center gap-2">
+                        <div class="w-32 bg-gray-200 rounded-full h-2.5">
+                            <div class="bg-red-600 h-2.5 rounded-full" style="width: {{ evaluation.technical_skills|floatformat:0 }}0%"></div>
+                        </div>
+                        <span class="text-sm font-bold text-gray-900 w-8 text-right">{{ evaluation.technical_skills }}/5</span>
+                    </div>
+                </div>
+
+                <!-- Communication -->
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span class="text-sm font-medium text-gray-700">Communication</span>
+                    <div class="flex items-center gap-2">
+                        <div class="w-32 bg-gray-200 rounded-full h-2.5">
+                            <div class="bg-red-600 h-2.5 rounded-full" style="width: {{ evaluation.communication|floatformat:0 }}0%"></div>
+                        </div>
+                        <span class="text-sm font-bold text-gray-900 w-8 text-right">{{ evaluation.communication }}/5</span>
+                    </div>
+                </div>
+
+                <!-- Professionalism -->
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span class="text-sm font-medium text-gray-700">Professionalism</span>
+                    <div class="flex items-center gap-2">
+                        <div class="w-32 bg-gray-200 rounded-full h-2.5">
+                            <div class="bg-red-600 h-2.5 rounded-full" style="width: {{ evaluation.professionalism|floatformat:0 }}0%"></div>
+                        </div>
+                        <span class="text-sm font-bold text-gray-900 w-8 text-right">{{ evaluation.professionalism }}/5</span>
+                    </div>
+                </div>
+
+                <!-- Teamwork -->
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span class="text-sm font-medium text-gray-700">Teamwork</span>
+                    <div class="flex items-center gap-2">
+                        <div class="w-32 bg-gray-200 rounded-full h-2.5">
+                            <div class="bg-red-600 h-2.5 rounded-full" style="width: {{ evaluation.teamwork|floatformat:0 }}0%"></div>
+                        </div>
+                        <span class="text-sm font-bold text-gray-900 w-8 text-right">{{ evaluation.teamwork }}/5</span>
+                    </div>
+                </div>
+
+                <!-- Initiative -->
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span class="text-sm font-medium text-gray-700">Initiative</span>
+                    <div class="flex items-center gap-2">
+                        <div class="w-32 bg-gray-200 rounded-full h-2.5">
+                            <div class="bg-red-600 h-2.5 rounded-full" style="width: {{ evaluation.initiative|floatformat:0 }}0%"></div>
+                        </div>
+                        <span class="text-sm font-bold text-gray-900 w-8 text-right">{{ evaluation.initiative }}/5</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overall Comments -->
+        <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Overall Comments</h2>
+            <div class="p-4 bg-gray-50 rounded-md text-gray-800 whitespace-pre-wrap text-sm border border-gray-200">{{ evaluation.overall_comments }}</div>
+        </div>
+    </div>
+
+    <!-- Sidebar: Status & Actions -->
+    <div class="lg:col-span-1">
+        <div class="bg-white shadow rounded-lg p-6 border border-gray-200 sticky top-8">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Review Status</h2>
+
+            <div class="mb-4">
+                {% if evaluation.review_status == 'pending_review' %}
+                    <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending Review</span>
+                {% elif evaluation.review_status == 'approved' %}
+                    <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800">Approved</span>
+                {% endif %}
+            </div>
+
+            <div class="space-y-3 text-sm mb-6">
+                <div>
+                    <span class="text-gray-500 block">Average Score</span>
+                    <p class="text-2xl font-bold text-red-800">{{ evaluation.average_score }}/5</p>
+                </div>
+                <div>
+                    <span class="text-gray-500 block">Recommendation</span>
+                    <p class="font-bold text-gray-900">{{ evaluation.get_recommendation_display }}</p>
+                </div>
+            </div>
+
+            {% if evaluation.review_status == 'pending_review' %}
+            <form method="post">
+                {% csrf_token %}
+                <p class="text-sm text-gray-600 mb-4">Approving this evaluation will make it visible to the student and send them a notification.</p>
+                <button type="submit" name="approve" value="1" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
+                    Approve & Notify Student
+                </button>
+            </form>
+            {% else %}
+            <div class="p-3 bg-green-50 rounded-md border border-green-200 text-sm text-green-800">
+                <p class="font-semibold">✓ This evaluation has been approved.</p>
+                <p class="text-xs mt-1">The student has been notified and can view their results.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

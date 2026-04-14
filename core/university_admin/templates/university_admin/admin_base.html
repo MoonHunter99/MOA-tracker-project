@@ -20,6 +20,14 @@
             <a href="{% url 'university_admin:app_list' %}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-red-50 hover:text-red-700 text-gray-700 font-medium {% if request.resolver_match.url_name == 'app_list' or request.resolver_match.url_name == 'manage_app' %}bg-red-50 text-red-700{% endif %}">
                 Internship Apps
             </a>
+            <a href="{% url 'university_admin:evaluations_list' %}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-red-50 hover:text-red-700 text-gray-700 font-medium {% if request.resolver_match.url_name == 'evaluations_list' or request.resolver_match.url_name == 'evaluation_detail' %}bg-red-50 text-red-700{% endif %}">
+                Evaluations
+            </a>
+            {% if perms.university_admin.can_manage_roles %}
+            <a href="{% url 'university_admin:manage_roles' %}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-red-50 hover:text-red-700 text-gray-700 font-medium {% if request.resolver_match.url_name == 'manage_roles' or request.resolver_match.url_name == 'edit_user_role' %}bg-red-50 text-red-700{% endif %}">
+                Manage Roles
+            </a>
+            {% endif %}
         </nav>
     </aside>
 

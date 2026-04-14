@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'accounts',
     'university_admin',
     'notifications',
+    'evaluations',
 
     # Third-party apps
     'django_q',

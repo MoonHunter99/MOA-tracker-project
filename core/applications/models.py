@@ -10,6 +10,7 @@ class InternshipApplication(models.Model):
         ('submitted', 'Submitted to Company'),
         ('interviewing', 'Interviewing'),
         ('accepted', 'Accepted'),
+        ('completed', 'Internship Completed'),
         ('rejected', 'Rejected'),
     )
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='applications')

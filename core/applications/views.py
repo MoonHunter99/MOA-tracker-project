@@ -78,9 +78,15 @@ def application_detail(request, pk):
             return redirect('applications:application_detail', pk=pk)
             
     thread_messages = application.messages.all().order_by('created_at')
+
+    # Only show evaluation to students if admin has approved it
+    evaluation = getattr(application, 'evaluation', None)
+    if evaluation and evaluation.review_status != 'approved':
+        evaluation = None
     
     context = {
         'application': application,
-        'thread_messages': thread_messages
+        'thread_messages': thread_messages,
+        'evaluation': evaluation,
     }
     return render(request, 'applications/application_detail.html', context)

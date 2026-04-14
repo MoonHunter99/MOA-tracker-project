@@ -93,4 +93,77 @@
         </div>
     </div>
 </div>
+
+<!-- Evaluation Section -->
+<div class="mt-8">
+    {% if application.status == 'completed' and not evaluation %}
+        <!-- CTA: Submit Evaluation -->
+        <div class="bg-white shadow rounded-lg p-6 border-2 border-dashed border-red-300">
+            <div class="text-center">
+                <svg class="mx-auto h-12 w-12 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <h3 class="mt-2 text-lg font-bold text-gray-900">Internship Completed</h3>
+                <p class="mt-1 text-sm text-gray-500">This student has completed their internship. Please submit a performance evaluation.</p>
+                <div class="mt-4">
+                    <a href="{% url 'portal:submit_evaluation' application.pk %}" class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-bold rounded-md shadow-sm text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                        Submit Evaluation
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% elif evaluation %}
+        <!-- Evaluation Summary Card -->
+        <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+            <div class="flex items-center justify-between mb-4 border-b pb-2">
+                <h2 class="text-lg font-bold text-gray-800">Submitted Evaluation</h2>
+                {% if evaluation.review_status == 'pending_review' %}
+                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending University Review</span>
+                {% elif evaluation.review_status == 'approved' %}
+                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Approved</span>
+                {% endif %}
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                    <p class="text-xs text-gray-500 font-semibold uppercase">Technical</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ evaluation.technical_skills }}/5</p>
+                </div>
+                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                    <p class="text-xs text-gray-500 font-semibold uppercase">Communication</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ evaluation.communication }}/5</p>
+                </div>
+                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                    <p class="text-xs text-gray-500 font-semibold uppercase">Professionalism</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ evaluation.professionalism }}/5</p>
+                </div>
+                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                    <p class="text-xs text-gray-500 font-semibold uppercase">Teamwork</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ evaluation.teamwork }}/5</p>
+                </div>
+                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                    <p class="text-xs text-gray-500 font-semibold uppercase">Initiative</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ evaluation.initiative }}/5</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 mb-4">
+                <div class="text-center px-4 py-2 bg-red-50 rounded-lg border border-red-200">
+                    <p class="text-xs text-red-600 font-semibold uppercase">Average</p>
+                    <p class="text-xl font-bold text-red-800">{{ evaluation.average_score }}/5</p>
+                </div>
+                <div class="text-center px-4 py-2 bg-blue-50 rounded-lg border border-blue-200">
+                    <p class="text-xs text-blue-600 font-semibold uppercase">Recommendation</p>
+                    <p class="text-sm font-bold text-blue-800">{{ evaluation.get_recommendation_display }}</p>
+                </div>
+            </div>
+
+            <div>
+                <p class="text-sm text-gray-500 font-semibold uppercase tracking-wider mb-2">Overall Comments</p>
+                <div class="p-4 bg-gray-50 rounded-md text-gray-800 whitespace-pre-wrap text-sm border border-gray-200">{{ evaluation.overall_comments }}</div>
+            </div>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}
+

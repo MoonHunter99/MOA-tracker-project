@@ -9,6 +9,7 @@ from django.db.models import Count
 from django_q.tasks import async_task
 from moas.models import MOARequest
 from applications.models import InternshipApplication, ApplicationMessage
+from evaluations.models import InternshipEvaluation
 from notifications.models import Notification
 from .utils import generate_endorsement_pdf
 
@@ -144,7 +145,13 @@ def manage_application(request, pk):
         'thread_messages': thread_messages
     })
 
+from django.contrib.auth.decorators import user_passes_test, permission_required
+from django.contrib.auth.models import User, Group
+
+# --- Application Views (existing) ---
+
 @user_passes_test(is_admin)
+@permission_required('university_admin.can_generate_endorsement', raise_exception=True)
 def download_endorsement_letter(request, pk):
     application = get_object_or_404(InternshipApplication, pk=pk)
     
@@ -156,6 +163,7 @@ def download_endorsement_letter(request, pk):
     return response
 
 @user_passes_test(is_admin)
+@permission_required('university_admin.can_export_data', raise_exception=True)
 def export_moas_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="moas_export.csv"'
@@ -178,6 +186,7 @@ def export_moas_csv(request):
     return response
 
 @user_passes_test(is_admin)
+@permission_required('university_admin.can_export_data', raise_exception=True)
 def export_applications_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="applications_export.csv"'
@@ -196,3 +205,83 @@ def export_applications_csv(request):
         ])
         
     return response
+
+# --- Role Management Views ---
+
+@user_passes_test(is_admin)
+@permission_required('university_admin.can_manage_roles', raise_exception=True)
+def manage_roles(request):
+    """View to list all staff users and their current roles."""
+    staff_users = User.objects.filter(is_staff=True).exclude(is_superuser=True).prefetch_related('groups')
+    return render(request, 'university_admin/manage_roles.html', {'staff_users': staff_users})
+
+@user_passes_test(is_admin)
+@permission_required('university_admin.can_manage_roles', raise_exception=True)
+def edit_user_role(request, user_id):
+    """Update a staff user's assigned group (Role)."""
+    target_user = get_object_or_404(User, id=user_id, is_staff=True)
+    if target_user.is_superuser:
+        messages.error(request, "Superuser roles cannot be modified through this portal.")
+        return redirect('university_admin:manage_roles')
+
+    groups = Group.objects.all()
+
+    if request.method == 'POST':
+        group_id = request.POST.get('group_id')
+        if group_id:
+            try:
+                new_group = Group.objects.get(id=group_id)
+                target_user.groups.clear()
+                target_user.groups.add(new_group)
+                messages.success(request, f"Role for {target_user.username} updated to {new_group.name}.")
+            except Group.DoesNotExist:
+                messages.error(request, "Selected role does not exist.")
+        else:
+            target_user.groups.clear()
+            messages.success(request, f"Removed all roles from {target_user.username}.")
+        
+        return redirect('university_admin:manage_roles')
+
+    return render(request, 'university_admin/edit_user_role.html', {
+        'target_user': target_user,
+        'groups': groups
+    })
+
+@user_passes_test(is_admin)
+def evaluations_list(request):
+    """List all submitted evaluations with review status badges."""
+    evaluations = InternshipEvaluation.objects.select_related(
+        'application__student', 'application__company', 'evaluator'
+    ).all().order_by('-created_at')
+    return render(request, 'university_admin/eval_list.html', {'evaluations': evaluations})
+
+@user_passes_test(is_admin)
+def evaluation_detail(request, pk):
+    """View full evaluation detail and approve it (making it visible to the student)."""
+    evaluation = get_object_or_404(
+        InternshipEvaluation.objects.select_related(
+            'application__student', 'application__company', 'evaluator'
+        ),
+        pk=pk
+    )
+
+    if request.method == 'POST' and 'approve' in request.POST:
+        if evaluation.review_status != 'approved':
+            evaluation.review_status = 'approved'
+            evaluation.save()
+
+            # Now notify the student that their evaluation is ready to view
+            Notification.objects.create(
+                user=evaluation.application.student,
+                title=f"Internship Evaluation Available: {evaluation.application.company.name}",
+                message=f"Your internship evaluation has been reviewed and approved. You can now view your performance results.",
+                link=f"/applications/{evaluation.application.pk}/"
+            )
+
+            messages.success(request, "Evaluation approved! The student has been notified and can now view their results.")
+        else:
+            messages.info(request, "This evaluation has already been approved.")
+        return redirect('university_admin:evaluation_detail', pk=pk)
+
+    return render(request, 'university_admin/eval_detail.html', {'evaluation': evaluation})
+

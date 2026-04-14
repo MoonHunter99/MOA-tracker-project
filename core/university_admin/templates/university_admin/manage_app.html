@@ -99,9 +99,13 @@
             </form>
             
             <hr class="my-4 border-gray-200">
+            {% if perms.university_admin.can_generate_endorsement %}
             <a href="{% url 'university_admin:download_endorsement' application.id %}" target="_blank" class="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-blue-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
                 Generate Endorsement PDF
             </a>
+            {% else %}
+            <p class="text-xs text-gray-500 text-center italic">Only Department Heads can generate endorsements.</p>
+            {% endif %}
         </div>
     </div>
 </div>
