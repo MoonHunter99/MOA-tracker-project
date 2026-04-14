@@ -9,6 +9,7 @@ from django.db.models import Count
 from django_q.tasks import async_task
 from moas.models import MOARequest
 from applications.models import InternshipApplication, ApplicationMessage
+from notifications.models import Notification
 from .utils import generate_endorsement_pdf
 
 def is_admin(user):
@@ -70,18 +71,19 @@ def manage_moa_request(request, pk):
         if new_status and new_status != moa_request.status:
             moa_request.status = new_status
             moa_request.save()
-            
-            # Phase 3: Trigger Email Notification
-            subject = f"Update: Your MOA Request for {moa_request.target_company_name}"
-            message = f"Hello {moa_request.student.username},\n\nYour MOA Request for {moa_request.target_company_name} has been updated to: {moa_request.get_status_display()}.\n\nThank you,\nPUP Admin Team"
-            send_mail(
-                subject,
-                message,
-                settings.DEFAULT_FROM_EMAIL,
-                [moa_request.student.email],
-                fail_silently=True,
+
+            # Create notification for the student
+            Notification.objects.create(
+                user=moa_request.student,
+                title=f"MOA Request Updated: {moa_request.target_company_name}",
+                message=f"Your MOA request status has been changed to: {moa_request.get_status_display()}.",
+                link=f"/moas/my-requests/"
             )
-            messages.success(request, f"MOA Request status updated to {moa_request.get_status_display()} and email sent via console.")
+
+            # Dispatch email asynchronously via django-q2 background worker
+            async_task('moas.tasks.send_moa_status_email', moa_request.pk)
+            
+            messages.success(request, f"MOA Request status updated to {moa_request.get_status_display()}. Notification and email queued.")
             return redirect('university_admin:moa_list')
             
     return render(request, 'university_admin/manage_moa.html', {'moa_request': moa_request, 'status_choices': MOARequest.STATUS_CHOICES})
@@ -106,6 +108,13 @@ def manage_application(request, pk):
                 content=new_message,
                 is_from_admin=True
             )
+            # Notify the student about the new message
+            Notification.objects.create(
+                user=application.student,
+                title=f"New message on your {application.company.name} application",
+                message=f"An administrator sent you a message regarding your internship application.",
+                link=f"/applications/{application.pk}/"
+            )
             messages.success(request, 'Message added to the thread.')
             return redirect('university_admin:manage_app', pk=pk)
             
@@ -115,6 +124,14 @@ def manage_application(request, pk):
             
             # Dispatch email asynchronously via django-q2 background worker
             async_task('applications.tasks.send_status_email', application.pk)
+            
+            # Create notification for the student
+            Notification.objects.create(
+                user=application.student,
+                title=f"Application Updated: {application.company.name}",
+                message=f"Your application status has been changed to: {application.get_status_display()}.",
+                link=f"/applications/{application.pk}/"
+            )
             
             messages.success(request, f"Application status updated to {application.get_status_display()}. Email notification queued.")
             return redirect('university_admin:app_list')

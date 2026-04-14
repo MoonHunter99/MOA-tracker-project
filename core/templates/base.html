@@ -25,6 +25,16 @@
                         {% if user.is_staff or user.is_superuser %}
                             <a href="{% url 'university_admin:dashboard' %}" class="bg-yellow-500 text-red-900 border border-transparent hover:bg-yellow-400 px-3 py-2 rounded-md text-sm font-bold ml-2 shadow-sm transition-colors">Admin Portal</a>
                         {% endif %}
+
+                        <!-- Notification Bell -->
+                        <a href="{% url 'notifications:notification_list' %}" class="relative hover:bg-red-700 px-3 py-2 rounded-md ml-2" title="Notifications">
+                            <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                            {% if unread_notification_count > 0 %}
+                                <span class="absolute -top-1 -right-1 bg-yellow-400 text-red-900 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center shadow">{{ unread_notification_count }}</span>
+                            {% endif %}
+                        </a>
                         
                         <span class="text-sm font-medium ml-4 text-red-200">Hello, {{ user.username }}</span>
                         <form action="{% url 'accounts:logout' %}" method="post" class="inline">
