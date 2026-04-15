@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile | PUP Internship System{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex items-center justify-between border-b border-gray-200 pb-4">
+    <h1 class="text-2xl font-extrabold text-gray-900">My Profile</h1>
+    <a href="{% url 'accounts:edit_profile' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-800 hover:bg-red-900 transition-colors">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+        Edit Profile
+    </a>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Left column: Identity Card -->
+    <div class="lg:col-span-1">
+        <div class="bg-white shadow rounded-lg border border-gray-200 overflow-hidden sticky top-8">
+            <div class="bg-red-800 px-6 py-6 text-white text-center">
+                <div class="w-20 h-20 bg-white text-red-800 rounded-full flex items-center justify-center text-3xl font-bold mx-auto mb-3 shadow">
+                    {{ user.first_name|first }}{{ user.last_name|first }}
+                </div>
+                <h2 class="text-xl font-bold">{{ user.first_name }} {{ user.last_name }}</h2>
+                <p class="text-red-200 text-sm mt-1">{{ profile.get_course_display|default:"No course set" }}</p>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Student Number</p>
+                    <p class="text-gray-800 font-medium">{{ profile.student_number|default:"Not set" }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Year Level</p>
+                    <p class="text-gray-800 font-medium">{{ profile.get_year_level_display|default:"Not set" }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Email</p>
+                    <p class="text-gray-800 font-medium">{{ user.email|default:"Not set" }}</p>
+                </div>
+
+                {% if profile.portfolio_url %}
+                <div>
+                    <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Portfolio</p>
+                    <a href="{{ profile.portfolio_url }}" target="_blank" class="text-red-700 hover:underline text-sm font-medium">{{ profile.portfolio_url }}</a>
+                </div>
+                {% endif %}
+
+                {% if profile.linkedin_url %}
+                <div>
+                    <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">LinkedIn</p>
+                    <a href="{{ profile.linkedin_url }}" target="_blank" class="text-red-700 hover:underline text-sm font-medium">{{ profile.linkedin_url }}</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Right column: Bio, Skills, Resume -->
+    <div class="lg:col-span-2 space-y-6">
+        <!-- Bio Section -->
+        <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">About Me</h2>
+            {% if profile.bio %}
+                <p class="text-gray-700 whitespace-pre-line">{{ profile.bio }}</p>
+            {% else %}
+                <p class="text-gray-400 italic">No bio yet. Click "Edit Profile" to add one.</p>
+            {% endif %}
+        </div>
+
+        <!-- Skills Section -->
+        <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Skills</h2>
+            {% if skills_list %}
+                <div class="flex flex-wrap gap-2">
+                    {% for skill in skills_list %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-50 text-red-800 border border-red-200">
+                            {{ skill }}
+                        </span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-400 italic">No skills added yet. Click "Edit Profile" to list your skills.</p>
+            {% endif %}
+        </div>
+
+        <!-- Resume History Section -->
+        <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+            <div class="flex items-center justify-between mb-4 border-b pb-2">
+                <h2 class="text-lg font-bold text-gray-800">Resume Versions</h2>
+                <a href="{% url 'accounts:edit_profile' %}" class="text-sm text-red-700 hover:underline font-semibold">Upload New &rarr;</a>
+            </div>
+
+            {% if resumes %}
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Label</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Uploaded</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for resume in resumes %}
+                            <tr class="{% if resume.is_active %}bg-green-50{% endif %}">
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    {% if resume.is_active %}
+                                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Current</span>
+                                    {% else %}
+                                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-600">Previous</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-700">{{ resume.label|default:"—" }}</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ resume.uploaded_at|date:"M d, Y g:i a" }}</td>
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    <a href="{{ resume.file.url }}" target="_blank" class="text-sm text-red-700 hover:underline font-medium">Download</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-gray-400 italic">No resumes uploaded yet. Upload your first resume to get started.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

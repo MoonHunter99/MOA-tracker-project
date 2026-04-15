@@ -11,6 +11,7 @@ from moas.models import MOARequest
 from applications.models import InternshipApplication, ApplicationMessage
 from evaluations.models import InternshipEvaluation
 from notifications.models import Notification
+from reviews.models import CompanyReview
 from .utils import generate_endorsement_pdf
 
 def is_admin(user):
@@ -284,4 +285,39 @@ def evaluation_detail(request, pk):
         return redirect('university_admin:evaluation_detail', pk=pk)
 
     return render(request, 'university_admin/eval_detail.html', {'evaluation': evaluation})
+
+# --- Review Management Views ---
+
+@user_passes_test(is_admin)
+def reviews_list(request):
+    """List all reviews, prioritizing pending reviews at the top."""
+    filtered_reviews = CompanyReview.objects.select_related('student', 'company').all().order_by(
+        'status', '-created_at' # 'approved' string is before 'pending_review', wait we want pending first. 
+    )
+    # the choices are 'approved' and 'pending_review' 
+    # to order by pending first we can just order by '-status' since 'p' > 'a'
+    filtered_reviews = CompanyReview.objects.select_related('student', 'company').all().order_by(
+        '-status', '-created_at'
+    )
+    
+    return render(request, 'university_admin/review_list.html', {'reviews': filtered_reviews})
+
+@user_passes_test(is_admin)
+def review_detail(request, pk):
+    """View flagged review details and approve/delete them."""
+    review = get_object_or_404(CompanyReview.objects.select_related('student', 'company'), pk=pk)
+
+    if request.method == 'POST':
+        if 'approve' in request.POST:
+            review.status = 'approved'
+            review.save()
+            messages.success(request, "Review has been approved and is now public.")
+            return redirect('university_admin:reviews_list')
+            
+        elif 'delete' in request.POST:
+            review.delete()
+            messages.success(request, "Review has been deleted.")
+            return redirect('university_admin:reviews_list')
+
+    return render(request, 'university_admin/review_detail.html', {'review': review})
 

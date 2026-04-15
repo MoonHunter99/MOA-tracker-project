@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile | PUP Internship System{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex items-center gap-4 border-b border-gray-200 pb-4">
+    <a href="{% url 'accounts:profile' %}" class="text-gray-400 hover:text-gray-600">&larr; Back to Profile</a>
+    <h1 class="text-2xl font-extrabold text-gray-900">Edit Profile</h1>
+</div>
+
+{% if messages %}
+<div class="mb-6">
+    {% for message in messages %}
+        <div class="p-4 rounded-md mb-2 {% if message.tags == 'success' %}bg-green-50 text-green-800 border border-green-200{% elif message.tags == 'warning' %}bg-yellow-50 text-yellow-800 border border-yellow-200{% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data" class="space-y-8">
+    {% csrf_token %}
+
+    <!-- Profile Information -->
+    <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+        <h2 class="text-lg font-bold text-gray-800 mb-6 border-b pb-2">Profile Information</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="md:col-span-2">
+                <label for="id_bio" class="block text-sm font-medium text-gray-700 mb-1">Bio</label>
+                {{ profile_form.bio }}
+                <p class="mt-1 text-xs text-gray-500">A brief summary about yourself — this is visible to companies.</p>
+            </div>
+
+            <div class="md:col-span-2">
+                <label for="id_skills" class="block text-sm font-medium text-gray-700 mb-1">Skills</label>
+                {{ profile_form.skills }}
+                <p class="mt-1 text-xs text-gray-500">Separate skills with commas. They'll appear as badges on your profile.</p>
+            </div>
+
+            <div>
+                <label for="id_portfolio_url" class="block text-sm font-medium text-gray-700 mb-1">Portfolio / GitHub URL</label>
+                {{ profile_form.portfolio_url }}
+            </div>
+
+            <div>
+                <label for="id_linkedin_url" class="block text-sm font-medium text-gray-700 mb-1">LinkedIn URL</label>
+                {{ profile_form.linkedin_url }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Resume Upload -->
+    <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+        <h2 class="text-lg font-bold text-gray-800 mb-2 border-b pb-2">Upload New Resume</h2>
+        <p class="text-sm text-gray-500 mb-6">Uploading a new file will set it as your active resume. Previous versions are kept in your history.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label for="id_file" class="block text-sm font-medium text-gray-700 mb-1">Resume File</label>
+                {{ resume_form.file }}
+                <p class="mt-1 text-xs text-gray-500">Accepted formats: PDF, DOC, DOCX</p>
+            </div>
+
+            <div>
+                <label for="id_label" class="block text-sm font-medium text-gray-700 mb-1">Label (optional)</label>
+                {{ resume_form.label }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="flex items-center justify-end gap-4">
+        <a href="{% url 'accounts:profile' %}" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900">Cancel</a>
+        <button type="submit" class="inline-flex items-center px-6 py-2.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-800 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+            Save Changes
+        </button>
+    </div>
+</form>
+{% endblock %}

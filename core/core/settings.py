@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'university_admin',
     'notifications',
     'evaluations',
+    'reviews',
 
     # Third-party apps
     'django_q',
@@ -148,6 +149,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = 'media/'
 # MEDIA_ROOT is the absolute filesystem path where uploaded files will be stored locally
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Maximum upload size for resumes (10 MB)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760
 
 # --- Authentication Redirect Settings ---
 LOGIN_REDIRECT_URL = '/'       # Redirects to the dashboard after a successful login

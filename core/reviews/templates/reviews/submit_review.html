@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Review: {{ application.company.name }} | PUP Internship System{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex items-center gap-4 border-b border-gray-200 pb-4">
+    <a href="{% url 'applications:application_detail' application.pk %}" class="text-gray-400 hover:text-gray-600">&larr; Back to Application</a>
+    <h1 class="text-2xl font-extrabold text-gray-900">Review Your Internship</h1>
+</div>
+
+<div class="max-w-3xl">
+    <!-- Company Context -->
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-8">
+        <p class="text-sm text-red-800">
+            <span class="font-bold">{{ application.company.name }}</span> &mdash; 
+            Internship completed on {{ application.application_date|date:"F d, Y" }}
+        </p>
+    </div>
+
+    <form method="post" class="space-y-8">
+        {% csrf_token %}
+
+        <!-- Star Ratings Section -->
+        <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+            <h2 class="text-lg font-bold text-gray-800 mb-6 border-b pb-2">Rate Your Experience</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Overall Rating -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Overall Experience</label>
+                    <div class="flex gap-1 star-rating">
+                        {% for radio in form.overall_rating %}
+                            <label class="cursor-pointer">
+                                {{ radio.tag }}
+                                <span class="text-2xl transition-colors {% if forloop.counter <= form.overall_rating.value|default:0 %}text-yellow-400{% else %}text-gray-300{% endif %} hover:text-yellow-400">★</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    {% if form.overall_rating.errors %}<p class="text-red-600 text-xs mt-1">{{ form.overall_rating.errors.0 }}</p>{% endif %}
+                </div>
+
+                <!-- Mentorship Rating -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Quality of Mentorship</label>
+                    <div class="flex gap-1 star-rating">
+                        {% for radio in form.mentorship_rating %}
+                            <label class="cursor-pointer">
+                                {{ radio.tag }}
+                                <span class="text-2xl transition-colors {% if forloop.counter <= form.mentorship_rating.value|default:0 %}text-yellow-400{% else %}text-gray-300{% endif %} hover:text-yellow-400">★</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    {% if form.mentorship_rating.errors %}<p class="text-red-600 text-xs mt-1">{{ form.mentorship_rating.errors.0 }}</p>{% endif %}
+                </div>
+
+                <!-- Work Culture Rating -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Work Culture</label>
+                    <div class="flex gap-1 star-rating">
+                        {% for radio in form.work_culture_rating %}
+                            <label class="cursor-pointer">
+                                {{ radio.tag }}
+                                <span class="text-2xl transition-colors {% if forloop.counter <= form.work_culture_rating.value|default:0 %}text-yellow-400{% else %}text-gray-300{% endif %} hover:text-yellow-400">★</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    {% if form.work_culture_rating.errors %}<p class="text-red-600 text-xs mt-1">{{ form.work_culture_rating.errors.0 }}</p>{% endif %}
+                </div>
+
+                <!-- Learning Rating -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Learning Opportunities</label>
+                    <div class="flex gap-1 star-rating">
+                        {% for radio in form.learning_rating %}
+                            <label class="cursor-pointer">
+                                {{ radio.tag }}
+                                <span class="text-2xl transition-colors {% if forloop.counter <= form.learning_rating.value|default:0 %}text-yellow-400{% else %}text-gray-300{% endif %} hover:text-yellow-400">★</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    {% if form.learning_rating.errors %}<p class="text-red-600 text-xs mt-1">{{ form.learning_rating.errors.0 }}</p>{% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Written Feedback Section -->
+        <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+            <h2 class="text-lg font-bold text-gray-800 mb-6 border-b pb-2">Written Feedback</h2>
+
+            <div class="space-y-6">
+                <div>
+                    <label for="id_pros" class="block text-sm font-semibold text-gray-700 mb-1">What did you enjoy?</label>
+                    {{ form.pros }}
+                    {% if form.pros.errors %}<p class="text-red-600 text-xs mt-1">{{ form.pros.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label for="id_cons" class="block text-sm font-semibold text-gray-700 mb-1">What could be improved?</label>
+                    {{ form.cons }}
+                    {% if form.cons.errors %}<p class="text-red-600 text-xs mt-1">{{ form.cons.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label for="id_advice" class="block text-sm font-semibold text-gray-700 mb-1">Advice for future interns (optional)</label>
+                    {{ form.advice }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Privacy Section -->
+        <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+            <div class="flex items-start gap-3">
+                {{ form.is_anonymous }}
+                <div>
+                    <label for="id_is_anonymous" class="text-sm font-semibold text-gray-700">Submit Anonymously</label>
+                    <p class="text-xs text-gray-500 mt-1">Your name will be hidden from the public review. Admins can still see your identity.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="flex items-center justify-end gap-4">
+            <a href="{% url 'applications:application_detail' application.pk %}" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900">Cancel</a>
+            <button type="submit" class="inline-flex items-center px-6 py-2.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-800 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                Submit Review
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+    /* Hide the actual radio inputs, show only the star spans */
+    .star-rating input[type="radio"] { display: none; }
+    .star-rating label:hover ~ label span { color: #d1d5db !important; }
+</style>
+{% endblock %}

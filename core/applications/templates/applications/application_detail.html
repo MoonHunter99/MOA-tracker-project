@@ -115,6 +115,22 @@
             </div>
         </div>
         {% endif %}
+        
+        <!-- Post-Internship Review Section -->
+        {% if application.status == 'completed' %}
+        <div class="bg-white shadow rounded-lg p-6 border border-gray-200 mb-6">
+            <h2 class="text-lg font-bold text-gray-800 mb-2 border-b pb-2">Internship Review</h2>
+            {% if not hasattr_review %} 
+                <p class="text-sm text-gray-500 mb-4">Share your experience to help future interns. Your feedback is valuable!</p>
+                <a href="{% url 'reviews:submit_review' application.pk %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-800 hover:bg-red-900">
+                    Leave a Review
+                </a>
+            {% else %}
+               <p class="text-sm text-gray-500 mb-4">You have already submitted a review for this internship. Thank you for your feedback!</p>
+               <a href="{% url 'reviews:company_reviews' application.company.pk %}" class="text-sm text-red-700 hover:underline font-semibold mt-1 inline-block">View All {{ application.company.name }} Reviews &rarr;</a>
+            {% endif %}
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

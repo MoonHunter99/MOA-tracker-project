@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import StudentProfile
+from .models import StudentProfile, ResumeVersion
 
 class StudentRegistrationForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=True, help_text='Required.', widget=forms.TextInput(attrs={'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm'}))
@@ -28,3 +28,32 @@ class StudentRegistrationForm(UserCreationForm):
             user.profile.year_level = self.cleaned_data['year_level']
             user.profile.save()
         return user
+
+
+TAILWIND_INPUT = 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm'
+TAILWIND_TEXTAREA = TAILWIND_INPUT + ' resize-none'
+
+
+class StudentProfileForm(forms.ModelForm):
+    """Form for editing the enhanced student profile fields."""
+    class Meta:
+        model = StudentProfile
+        fields = ['bio', 'skills', 'portfolio_url', 'linkedin_url']
+        widgets = {
+            'bio': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Tell companies about yourself in a few sentences...'}),
+            'skills': forms.TextInput(attrs={'class': TAILWIND_INPUT, 'placeholder': 'e.g. Python, AutoCAD, MATLAB, Embedded Systems'}),
+            'portfolio_url': forms.URLInput(attrs={'class': TAILWIND_INPUT, 'placeholder': 'https://github.com/yourname'}),
+            'linkedin_url': forms.URLInput(attrs={'class': TAILWIND_INPUT, 'placeholder': 'https://linkedin.com/in/yourname'}),
+        }
+
+
+class ResumeUploadForm(forms.ModelForm):
+    """Form for uploading a new resume version."""
+    class Meta:
+        model = ResumeVersion
+        fields = ['file', 'label']
+        widgets = {
+            'file': forms.ClearableFileInput(attrs={'class': TAILWIND_INPUT, 'accept': '.pdf,.doc,.docx'}),
+            'label': forms.TextInput(attrs={'class': TAILWIND_INPUT, 'placeholder': 'e.g. Engineering Focus (optional)'}),
+        }
+

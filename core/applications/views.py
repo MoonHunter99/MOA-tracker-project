@@ -83,10 +83,13 @@ def application_detail(request, pk):
     evaluation = getattr(application, 'evaluation', None)
     if evaluation and evaluation.review_status != 'approved':
         evaluation = None
+        
+    hasattr_review = hasattr(application, 'review')
     
     context = {
         'application': application,
         'thread_messages': thread_messages,
         'evaluation': evaluation,
+        'hasattr_review': hasattr_review,
     }
     return render(request, 'applications/application_detail.html', context)

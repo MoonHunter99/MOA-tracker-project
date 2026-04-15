@@ -36,6 +36,7 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('moas/', include('moas.urls')),
     path('notifications/', include('notifications.urls', namespace='notifications')),
+    path('reviews/', include('reviews.urls', namespace='reviews')),
 ]
 
 # Only serve media files this way during local development. In production, a web server like Nginx handles this.
